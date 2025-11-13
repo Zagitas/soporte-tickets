@@ -1,0 +1,57 @@
+<form nz-form class="filters">
+  <div class="grid">
+    <div class="col">
+      <label nz-form-item-required>Project</label>
+      <!-- ticket-filters.component.html -->
+      <nz-select
+        [(ngModel)]="proyecto"
+        name="proyecto"
+        nzAllowClear
+        nzPlaceHolder="All projects"
+        [nzLoading]="projectsLoading"
+        (ngModelChange)="emit()">
+        <nz-option *ngFor="let p of projects" [nzLabel]="p.label" [nzValue]="p.label"></nz-option>
+      </nz-select>
+    </div>
+
+    <div class="col">
+      <label>Status</label>
+      <nz-select [(ngModel)]="estado" name="estado" nzAllowClear nzPlaceHolder="All status"
+                 (ngModelChange)="emit()">
+        <nz-option *ngFor="let s of statuses" [nzLabel]="s.label" [nzValue]="s.value"></nz-option>
+      </nz-select>
+    </div>
+
+    <div class="col">
+      <label>Priority</label>
+      <nz-select [(ngModel)]="prioridad" name="prioridad" nzAllowClear nzPlaceHolder="All priorities"
+                 (ngModelChange)="emit()">
+        <nz-option *ngFor="let p of priorities" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+      </nz-select>
+    </div>
+
+    <div class="col search">
+      <label>Search</label>
+      <nz-input-group [nzSuffix]="searchIcon">
+        <input nz-input [(ngModel)]="busqueda" name="busqueda" (ngModelChange)="onTextChange()" placeholder="Search tickets..." />
+      </nz-input-group>
+      <ng-template #searchIcon><span nz-icon nzType="search"></span></ng-template>
+    </div>
+
+    <!-- <div class="col actions">
+      <button
+        nz-button
+        nzType="default"
+        nzGhost
+        class="clear-btn"
+        (click)="clear()"
+        [disabled]="!hasFilters"
+        nz-tooltip
+        nzTooltipTitle="Clear filters"
+        aria-label="Clear filters">
+        <span nz-icon nzType="close-circle"></span>
+        <span>Clear</span>
+      </button>
+    </div> -->
+  </div>
+</form>

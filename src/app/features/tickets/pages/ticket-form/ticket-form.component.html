@@ -1,0 +1,114 @@
+<div class="page">
+  <!-- Encabezado coherente con listado -->
+  <nz-page-header class="mb-3">
+    <nz-page-header-title>New ticket</nz-page-header-title>
+    <nz-page-header-subtitle>Register a support request</nz-page-header-subtitle>
+  </nz-page-header>
+
+  <nz-card>
+    <form nz-form [formGroup]="form" (ngSubmit)="submit()" class="ticket-form">
+      <div nz-row [nzGutter]="16">
+        <!-- Project -->
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Project</nz-form-label>
+            <nz-form-control [nzErrorTip]="'Selecciona un proyecto'">
+              <nz-select
+                formControlName="projectSlug"
+                nzPlaceHolder="Select a project"
+                nzAllowClear>
+                <nz-option *ngFor="let p of projects" [nzLabel]="p.label" [nzValue]="p.value || p.label"></nz-option>
+              </nz-select>
+              <div class="hint">Choose the project related to this ticket.</div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Priority -->
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Priority</nz-form-label>
+            <nz-form-control [nzErrorTip]="'Selecciona una prioridad'">
+              <nz-select
+                formControlName="priority"
+                nzPlaceHolder="Select a priority"
+                nzAllowClear>
+                <nz-option *ngFor="let p of priorities" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Title -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Title</nz-form-label>
+            <nz-form-control [nzErrorTip]="'At least 5 characters'">
+              <input nz-input formControlName="title" placeholder="Enter a descriptive title" />
+              <div class="hint">At least 5 characters.</div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Description -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label [nzRequired]="true">Description</nz-form-label>
+            <nz-form-control [nzErrorTip]="'Description is too short'">
+              <textarea
+                nz-input
+                formControlName="description"
+                rows="4"
+                placeholder="Describe the issue in detail"></textarea>
+              <div class="hint">
+                Give enough context; minimum {{ MIN_DESC }} characters.
+                <!-- <span *ngIf="remaining > 0" class="muted"> (faltan {{ remaining }})</span> -->
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Attachments -->
+        <div nz-col [nzSpan]="24">
+          <nz-form-item>
+            <nz-form-label>Attachments</nz-form-label>
+            <nz-form-control>
+              <nz-upload
+                nzType="drag"
+                nzMultiple
+                [nzFileList]="fileList"
+                [nzBeforeUpload]="beforeUpload"
+                [nzRemove]="removeFile"
+                [nzShowUploadList]="{ showPreviewIcon: false, showRemoveIcon: true }">
+                <p class="ant-upload-drag-icon"><span nz-icon nzType="inbox"></span></p>
+                <p class="ant-upload-text"><b>Click to upload</b> or drag & drop</p>
+                <p class="ant-upload-hint">PDF, Word, Excel, images. Max {{ MAX_FILES }} files.</p>
+              </nz-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Assigned to -->
+        <!-- <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-form-item>
+            <nz-form-label>Assigned To</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="assignedEmail" nzAllowClear nzPlaceHolder="Unassigned">
+                <nz-option *ngFor="let u of users" [nzLabel]="u.label" [nzValue]="u.value"></nz-option>
+              </nz-select>
+              <div class="hint">Choose who will work on this ticket.</div>
+            </nz-form-control>
+          </nz-form-item>
+        </div> -->
+      </div>
+
+      <nz-divider></nz-divider>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button nz-button nzType="default" (click)="cancel()" type="button">Cancel</button>
+        <button nz-button nzType="primary" [nzLoading]="loading()" type="submit">Save ticket</button>
+      </div>
+    </form>
+  </nz-card>
+</div>

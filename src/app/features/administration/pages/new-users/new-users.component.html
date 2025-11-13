@@ -1,0 +1,71 @@
+<nz-page-header class="mb-3" nzTitle="Registro de usuarios" nzSubtitle="Crea clientes y supervisores">
+  <ng-container *nzPageHeaderExtra>
+    <button nz-button nzType="default" (click)="cancel()">
+      <span nz-icon nzType="arrow-left"></span> Volver
+    </button>
+    <button nz-button nzType="primary" (click)="submit()">
+      <span nz-icon nzType="save"></span> Guardar
+    </button>
+  </ng-container>
+</nz-page-header>
+
+<nz-card [nzLoading]="loading()">
+  <form [formGroup]="form" class="form-grid">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="lbl">Email <span class="req">*</span></label>
+        <input nz-input formControlName="email" type="email" placeholder="usuario@empresa.com" />
+        <div class="err" *ngIf="isInvalid('email')">Ingresa un email válido.</div>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="lbl">Nombre completo <span class="req">*</span></label>
+        <input nz-input formControlName="fullName" placeholder="Nombre y apellidos" />
+        <div class="err" *ngIf="isInvalid('fullName')">Mínimo 3 caracteres.</div>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="lbl">Rol <span class="req">*</span></label>
+        <nz-select formControlName="role" nzPlaceHolder="Selecciona un rol">
+          <nz-option nzValue="CLIENT" nzLabel="CLIENT"></nz-option>
+          <nz-option nzValue="SUPERVISOR" nzLabel="SUPERVISOR"></nz-option>
+        </nz-select>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="lbl">Empresa <span class="req">*</span></label>
+        <nz-select formControlName="companyId" nzPlaceHolder="Selecciona una empresa" nzShowSearch>
+          <nz-option *ngFor="let c of companies()" [nzValue]="c.id" [nzLabel]="c.label"></nz-option>
+        </nz-select>
+        <div class="err" *ngIf="isInvalid('companyId')">Selecciona una empresa.</div>
+      </div>
+
+      <div nz-col [nzSpan]="24">
+        <label class="lbl">
+          Proyectos asignados <span class="req">*</span>
+          <small class="muted ml-1">{{ isClient() ? '(uno)' : '(puede seleccionar varios)' }}</small>
+        </label>
+
+        <!-- Un SOLO select; cambia el modo dinámicamente -->
+        <nz-select
+          formControlName="projects"
+          [nzMode]="isSupervisor() ? 'multiple' : 'default'"
+          nzPlaceHolder="Selecciona proyecto(s)"
+          nzShowSearch>
+
+          <nz-option *ngFor="let p of projects()" [nzValue]="p.id" [nzLabel]="p.label"></nz-option>
+        </nz-select>
+
+        <div class="err" *ngIf="isInvalid('projects')">
+          {{ isClient() ? 'Selecciona un proyecto.' : 'Selecciona al menos un proyecto.' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones inferior (opcional) -->
+    <div class="actions">
+      <button nz-button nzType="default" type="button" (click)="cancel()">Cancelar</button>
+      <button nz-button nzType="primary" type="button" (click)="submit()">Guardar</button>
+    </div>
+  </form>
+</nz-card>

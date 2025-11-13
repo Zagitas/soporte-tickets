@@ -1,0 +1,31 @@
+.tickets-table {
+  width: 100%;
+
+  .mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .assignee { display:flex; align-items:center; gap:8px; }
+  .text-right { text-align:right; white-space: nowrap; }
+
+  .truncate {
+    max-width: 520px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .row-hover:hover { background: #f8fafc; }
+  .pill { border-radius: 9999px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 9999px;
+    display: inline-block; margin-right: 6px; vertical-align: 1px;
+    box-shadow: 0 0 0 2px #fff;
+  }
+}
+
+/* ❌ elimina este override que tenías:
+:host ::ng-deep .ant-table-body { overflow: visible !important; }
+*/
+
+/* Si dejaste un wrapper propio, fuerza ancho */
+:host, :host ::ng-deep .ant-table-wrapper { display:block; width:100%; }

@@ -1,0 +1,200 @@
+<div class="page" *ngIf="!loading(); else loadingTpl">
+  <nz-page-header class="mb-3">
+    <nz-page-header-title>Ticket detail</nz-page-header-title>
+    <nz-page-header-subtitle>
+      <a [routerLink]="['/tickets']">Tickets</a>
+      <span class="mx-1">/</span>
+      <span>#{{ ticket()?.number || ticket()?.id || '—' }}</span>
+    </nz-page-header-subtitle>
+
+    <ng-container *nzPageHeaderExtra>
+      <button *ngIf="!isEditMode()" nz-button nzType="primary" (click)="goEdit()">
+        <span nz-icon nzType="edit"></span> Edit
+      </button>
+    </ng-container>
+  </nz-page-header>
+
+  <nz-card class="mb-3">
+    <div nz-row [nzGutter]="16" class="items-center">
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <h3 class="mb-1">{{ ticket()?.title || '—' }}</h3>
+        <div class="muted">#{{ ticket()?.number || ticket()?.id || '—' }} •
+          {{ tickets.formatDate(ticket()?.created) }} ({{ tickets.relTimeFrom(ticket()?.created) }})
+        </div>
+      </div>
+
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <div class="summary-grid">
+          <div>
+            <div class="muted">Status</div>
+            <nz-tag [nzColor]="statusColor(ticket()?.status)">
+              {{ (ticket()?.statusLabel || '—') | titlecase }}
+            </nz-tag>
+          </div>
+          <div>
+            <div class="muted">Priority</div>
+            <nz-tag [nzColor]="priorityColor(ticket()?.priority)">
+              {{ (ticket()?.priority || '—') | titlecase }}
+            </nz-tag>
+          </div>
+          <div>
+            <div class="muted">Project</div>
+            <div>{{ ticket()?.project || ticket()?.project_name || '—' }}</div>
+          </div>
+          <div class="assignee">
+            <nz-avatar [nzText]="initials(ticket()?.assigned || ticket()?.assigned_name)" nzSize="small"></nz-avatar>
+            <div>
+              <div class="muted">Assignee</div>
+              <div>{{ ticket()?.assigned || ticket()?.assigned_name || 'Unassigned' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-card>
+    <nz-tabset
+      [nzSelectedIndex]="tabIndex()"
+      (nzSelectedIndexChange)="onTabIndexChange($event)">
+
+      <!-- Summary -->
+      <nz-tab nzTitle="Summary">
+        <ng-container *ngIf="!isEditMode(); else editTpl">
+          <h5>Description</h5>
+          <p class="prewrap" *ngIf="ticket()?.description; else noDesc">
+            {{ ticket()?.description }}
+          </p>
+          <ng-template #noDesc><span class="muted">No description provided.</span></ng-template>
+        </ng-container>
+      </nz-tab>
+
+      <!-- Attachments -->
+      <nz-tab nzTitle="Attachments">
+        <!-- Edit mode: botón agregar -->
+        <div class="mb-3" *ngIf="isEditMode()">
+          <button nz-button nzType="dashed" (click)="filePicker.click()">
+            <span nz-icon nzType="upload"></span> Agregar archivos
+          </button>
+          <input #filePicker type="file" multiple hidden (change)="onFilesPicked($event)" />
+        </div>
+
+        <ng-container *ngIf="attachmentsView().length; else noFiles">
+          <nz-list [nzDataSource]="attachmentsView()" [nzRenderItem]="it" [nzItemLayout]="'horizontal'">
+            <ng-template #it let-f>
+              <nz-list-item>
+                <nz-list-item-meta
+                  [nzTitle]="f.name"
+                  [nzDescription]="displayDescription(f)">
+                </nz-list-item-meta>
+
+                <!-- Vista: descargar / previsualizar -->
+                <ng-container *ngIf="!isEditMode(); else editActions">
+                  <button nz-button nzType="default" (click)="downloadOrPreview(f)">
+                    Descargar
+                  </button>
+                </ng-container>
+
+                <!-- Edición: marcar para eliminar o quitar nuevos -->
+                <ng-template #editActions>
+                  <nz-tag *ngIf="f._isNew" nzColor="processing" class="mr-2">Nuevo</nz-tag>
+                  <button nz-button nzType="default" nzDanger (click)="removeAttachment(f)">
+                    <span nz-icon nzType="delete"></span> Quitar
+                  </button>
+                </ng-template>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </ng-container>
+
+        <ng-template #noFiles>
+          <span class="muted">No attachments.</span>
+        </ng-template>
+      </nz-tab>
+
+    </nz-tabset>
+  </nz-card>
+
+  <!-- Barra fija de acciones -->
+  <div class="save-bar"
+      *ngIf="isEditMode() && activeTab()==='attachments'">
+    <div class="save-bar__content">
+      <button nz-button nzType="default" (click)="cancelEdit()">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        [disabled]="saving() || (!form.dirty && !hasAttachmentChanges())"
+        [nzLoading]="saving()"
+        (click)="save()">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #editTpl>
+  <form [formGroup]="form" class="edit-form" (ngSubmit)="save()">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="24" class="form-group">
+        <label class="lbl">Title</label>
+        <input nz-input formControlName="title" />
+      </div>
+      <div nz-col [nzSpan]="24" class="form-group">
+        <label class="lbl">Description</label>
+        <textarea nz-input rows="5" formControlName="description"></textarea>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="12" class="form-group">
+        <label class="lbl">Project</label>
+        <nz-select formControlName="project_id" nzAllowClear nzPlaceHolder="Select a project">
+          <nz-option *ngFor="let p of projects()" [nzLabel]="p.label" [nzValue]="p.id"></nz-option>
+        </nz-select>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+        <label class="lbl">Status</label>
+        <nz-select formControlName="status" nzAllowClear nzPlaceHolder="Select a status">
+          <nz-option *ngFor="let p of status()" [nzLabel]="p.label" [nzValue]="p.id"></nz-option>
+        </nz-select>
+      </div>
+
+      <!-- <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+        <label class="lbl">Status</label>
+        <nz-select formControlName="status">
+          <nz-option *ngFor="let s of statuses" [nzLabel]="s.label" [nzValue]="s.value"></nz-option>
+        </nz-select>
+      </div> -->
+      <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+        <label class="lbl">Priority</label>
+        <nz-select formControlName="priority">
+          <nz-option *ngFor="let p of priorities" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+
+    <div *ngIf="userRol === 4" nz-col [nzXs]="24" [nzMd]="12" class="form-group">
+      <label class="lbl">Assignee</label>
+      <nz-select formControlName="assigned_to" nzAllowClear nzPlaceHolder="Unassigned">
+        <nz-option *ngFor="let u of users()" [nzLabel]="u.label" [nzValue]="u.id"></nz-option>
+      </nz-select>
+    </div>
+
+    <div class="actions">
+      <button nz-button nzType="default" type="button" (click)="cancelEdit()">Cancel</button>
+      <button
+        nz-button
+        nzType="primary"
+        [disabled]="saving() || (!form.dirty && !hasAttachmentChanges())"
+        [nzLoading]="saving()"
+        type="submit">
+        Save
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #loadingTpl>
+  <nz-card>
+    <div class="placeholder col-12 mb-2"></div>
+    <div class="placeholder col-10 mb-2"></div>
+    <div class="placeholder col-8"></div>
+  </nz-card>
+</ng-template>

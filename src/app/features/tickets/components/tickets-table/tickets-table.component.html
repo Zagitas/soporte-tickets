@@ -1,0 +1,81 @@
+<nz-table
+  class="tickets-table"
+  [nzData]="tickets"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false"
+  [nzLoading]="loading"
+  [nzBordered]="true"
+  nzSize="small"
+  [nzScroll]="{ x: '1200px' }"
+  [nzNoResult]="empty">
+  <ng-template #empty></ng-template>
+  <thead>
+    <tr>
+      <th nzWidth="120px">ID</th>
+      <th nzWidth="180px" nzShowSort (nzSortChange)="sort('projectName',$event)">Project</th>
+      <th nzShowSort (nzSortChange)="sort('title',$event)">Title</th>
+      <th nzWidth="130px">Priority</th>
+      <th nzWidth="140px">Status</th>
+      <th nzWidth="220px">Assigned to</th>
+      <th nzWidth="160px" nzShowSort (nzSortChange)="sort('createdDate',$event)">Created</th>
+      <th nzWidth="180px" class="text-right">Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <!-- usa directamente "tickets" (no tbl.data) -->
+    <tr *ngFor="let t of tickets; trackBy: trackById" class="row-hover">
+      <td class="mono">{{ t.id }}</td>
+      <td><span class="truncate" [nz-tooltip]="t.projectName">{{ t.projectName }}</span></td>
+      <td>
+        <span class="truncate" [nz-tooltip]="t.title">{{ t.title }}</span>
+        <nz-tag *ngIf="t.slaBreached" nzColor="red" nz-tooltip nzTooltipTitle="SLA vencido">SLA</nz-tag>
+      </td>
+      <td>
+        <nz-tag [nzColor]="prioColor(t.priority)" class="pill">
+          <span class="dot" [style.background]="prioDot(t.priority)"></span>
+          {{ t.priority }}
+        </nz-tag>
+      </td>
+      <td>
+        <nz-tag [nzColor]="statusColor(t.status)" class="pill">
+          <span class="dot" [style.background]="statusDot(t.status)"></span>
+          {{ t.statusLabel }}
+        </nz-tag>
+      </td>
+      <td class="assignee">
+        <nz-avatar [nzText]="initials(t.assignedTo?.name)" nzSize="small"></nz-avatar>
+        <span class="name">{{ t.assignedTo?.name || 'Sin asignar' }}</span>
+      </td>
+      <td>
+        <span [nz-tooltip]="t.createdDate | date:'yyyy-MM-dd HH:mm'">
+          {{ t.createdDate | date:'yyyy-MM-dd' }}
+          <small class="muted">({{ t.createdDate | timeAgo }})</small>
+        </span>
+      </td>
+      <td class="text-right">
+        <nz-space>
+          <button nz-button nzType="default" nzSize="small" (click)="onView(t)">
+            <span nz-icon nzType="eye"></span> See
+          </button>
+          <button nz-button nzType="default" nzSize="small" (click)="onEdit(t)">
+            <span nz-icon nzType="edit"></span> Edit
+          </button>
+              
+          <!-- <button nz-button nzSize="small" nz-dropdown [nzDropdownMenu]="rowMenu" nzTrigger="click">
+            Más <span nz-icon nzType="down"></span>
+          </button>
+          <nz-dropdown-menu #rowMenu="nzDropdownMenu">
+            <ul nz-menu>
+              <li nz-menu-item (click)="onEdit(t)"><span nz-icon nzType="edit"></span> Editar</li><li nz-menu-item (click)="duplicate(t)"><span nz-icon nzType="copy"></span> Duplicar</li>
+              <li nz-menu-divider></li>
+              <li nz-menu-item nzDanger (click)="ticketDelete.emit(t)">
+                <span nz-icon nzType="delete"></span> Eliminar
+              </li>
+            </ul>
+          </nz-dropdown-menu> -->
+        </nz-space>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

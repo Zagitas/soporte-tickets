@@ -1,0 +1,30 @@
+<!-- Selector de idioma en la parte superior derecha -->
+<div class="lang-toggle">
+  <!-- <button mat-button [matMenuTriggerFor]="langMenu">{{ selectedLanguage.toUpperCase() }}</button> -->
+</div>
+<!-- 
+<mat-menu #langMenu="matMenu">
+  <button mat-menu-item (click)="changeLanguage('en')">English</button>
+  <button mat-menu-item (click)="changeLanguage('es')">Español</button>
+</mat-menu> -->
+
+<!-- Contenedor principal -->
+<div class="login-page">
+  <!-- Sección izquierda: Logo + Botón de Microsoft -->
+  <div class="login-left">
+    <img src="../../../../assets/login-logo.png" alt="Zagitas Logo" class="logo" />
+
+    <button mat-stroked-button color="primary" class="login-btn" (click)="login()">
+      <div class="login-content">
+        <img src="../../../../assets/logo-microsoft.png" class="ms-icon" alt="Microsoft logo" />
+        <!-- <span>{{ 'LOGIN' | translate }}</span> -->
+        <span>LOGIN</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Sección derecha: Imagen ilustrativa -->
+  <div class="login-right">
+    <img src="../../../../assets/login-ilustration.png" alt="Login Illustration" />
+  </div>
+</div>
