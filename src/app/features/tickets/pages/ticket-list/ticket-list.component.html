@@ -74,7 +74,7 @@
 <!-- Tabla -->
 <nz-card [nzLoading]="loading">
   <div class="muted" style="margin-bottom:8px">
-    Showing {{pagedTickets?.length || 0}} records in the table
+    Showing {{ pagedTickets.length || 0 }} records in the table
   </div>
 
   <app-tickets-table
@@ -87,7 +87,7 @@
     (sortChange)="onSortChange($event)">
   </app-tickets-table>
 
-  <ng-template [ngIf]="!pagedTickets?.length && !loading">
+  <ng-template [ngIf]="!pagedTickets.length && !loading">
     <nz-empty [nzNotFoundContent]="'No tickets found'">
       <ng-template #extra>
         <button nz-button nzType="primary" (click)="newTicket()">
