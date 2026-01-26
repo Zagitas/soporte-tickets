@@ -1,17 +1,20 @@
 <!-- Solo muestra el layout si el usuario está logueado -->
 <ng-container *ngIf="!isBooting">
   <nz-layout *ngIf="isLoggedIn; else loginView" class="app-layout">
+
+    <!-- SIDER: solo desktop/tablet -->
     <nz-sider
+      *ngIf="!isMobile"
       class="menu-sidebar"
       nzCollapsible
       nzWidth="256px"
-      nzBreakpoint="md"
       [(nzCollapsed)]="isCollapsed"
       [nzTrigger]="null"
     >
       <div class="sidebar-logo" [ngClass]="{ 'sidebar-mini-logo': isCollapsed }">
         <img src="assets/logo.png" alt="Logo" class="logo"/>
       </div>
+
       <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
         <li nz-submenu nzOpen nzTitle="Tickets" nzIcon="profile">
           <ul>
@@ -23,6 +26,7 @@
             </li>
           </ul>
         </li>
+
         <li nz-submenu nzOpen nzTitle="Administration" nzIcon="team" *ngIf="userRol === 4">
           <ul>
             <li nz-menu-item routerLink="/tickets/users" nzMatchRouter nzMatchRouterExact>
@@ -35,10 +39,11 @@
 
     <nz-layout>
       <nz-header class="custom-header">
-        <!-- Trigger colapso -->
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-          <span nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></span>
+        <!-- Trigger (desktop colapsa, mobile abre drawer) -->
+        <span class="header-trigger" (click)="isMobile ? (drawerVisible = true) : (isCollapsed = !isCollapsed)">
+          <span nz-icon [nzType]="isMobile ? 'menu' : (isCollapsed ? 'menu-unfold' : 'menu-fold')"></span>
         </span>
+
         <span class="title">Ticket Support</span>
 
         <div class="spacer"></div>
@@ -46,7 +51,7 @@
         <!-- Perfil (dropdown) -->
         <a nz-dropdown [nzDropdownMenu]="userMenu" class="user-trigger" nzTrigger="click">
           <span nz-icon nzType="user" class="mr-1"></span>
-          <span class="user-name">{{userName}}</span>
+          <span class="user-name">{{ userName }}</span>
           <span nz-icon nzType="down" class="ml-1"></span>
         </a>
 
@@ -59,14 +64,51 @@
           </ul>
         </nz-dropdown-menu>
       </nz-header>
-      
-      <nz-content>
+
+      <nz-content class="app-content">
         <div class="inner-content">
           <router-outlet></router-outlet>
         </div>
       </nz-content>
     </nz-layout>
   </nz-layout>
+
+  <!-- DRAWER menu: solo mobile -->
+  <nz-drawer
+    class="mobile-drawer"
+    nzPlacement="left"
+    [nzClosable]="true"
+    [nzVisible]="drawerVisible"
+    (nzOnClose)="drawerVisible = false"
+    nzTitle="Menu"
+  >
+    <ng-container *nzDrawerContent>
+      <div class="drawer-logo">
+        <img src="assets/logo.png" alt="Logo" />
+      </div>
+
+      <ul nz-menu nzTheme="dark" nzMode="inline">
+        <li nz-submenu nzOpen nzTitle="Tickets" nzIcon="profile">
+          <ul>
+            <li nz-menu-item routerLink="/tickets" nzMatchRouter nzMatchRouterExact (click)="drawerVisible = false">
+              <a routerLink="/tickets">Ticket list</a>
+            </li>
+            <li nz-menu-item routerLink="/tickets/new" nzMatchRouter nzMatchRouterExact (click)="drawerVisible = false">
+              <a routerLink="/tickets/new">New ticket</a>
+            </li>
+          </ul>
+        </li>
+
+        <li nz-submenu nzOpen nzTitle="Administration" nzIcon="team" *ngIf="userRol === 4">
+          <ul>
+            <li nz-menu-item routerLink="/tickets/users" nzMatchRouter nzMatchRouterExact (click)="drawerVisible = false">
+              <a routerLink="/tickets/users">Register user</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </ng-container>
+  </nz-drawer>
 
   <!-- Template alternativo cuando no hay login -->
   <ng-template #loginView>

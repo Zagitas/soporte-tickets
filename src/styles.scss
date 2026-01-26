@@ -23,3 +23,88 @@ a {
   text-decoration: none;
 }
 
+
+
+/* ================= DRAWER FULL BLUE (MOBILE) ================= */
+
+/* 1) El contenedor completo del drawer */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-content-wrapper {
+  /* ancho opcional; comenta si no quieres */
+  width: 86vw !important;
+  max-width: 380px;
+}
+
+/* 2) Pinta TODO el drawer (content/header/body) */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-content,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-header,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-body {
+  background: #001529 !important;
+  color: #fff;
+  padding: 0 !important;
+}
+
+/* 3) Header: bordecito y título/close blancos */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-header {
+  border-bottom: 1px solid rgba(255,255,255,.10) !important;
+}
+
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-title,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-close,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-close .anticon {
+  color: #fff !important;
+}
+
+/* 4) Body sin padding para que el menu pegue */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-drawer-body {
+  padding: 0 !important;
+}
+
+/* 5) Tu logo ocupa todo el ancho */
+.drawer-logo {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: #001529;
+
+  img { height: 34px; }
+}
+
+/* 6) El menu ocupa 100% del ancho */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-root {
+  width: 100% !important;
+  background: transparent !important;
+  border-right: 0 !important;
+}
+
+/* 7) Quita fondos raros de submenus y fuerza full width */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-submenu,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-submenu-title,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-item {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* 8) Hover y selected bonito */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-item:hover,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-submenu-title:hover {
+  background: rgba(255,255,255,.08) !important;
+}
+
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-item-selected {
+  background: rgba(24,144,255,.22) !important;
+}
+
+/* 9) Texto/íconos en blanco */
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-item a,
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-submenu-title {
+  color: rgba(255,255,255,.88) !important;
+}
+
+.mobile-drawer .ant-drawer-content-wrapper .mobile-drawer .ant-menu-item-selected a {
+  color: #fff !important;
+}

@@ -16,6 +16,7 @@ export class ProjectsService {
   private http = inject(HttpClient);
   private urlProjects = environment.api.options.projects;
   private urlStatus = environment.api.options.status;
+  private urlSupport = environment.api.options.support;
 
   listProjects(): Observable<SelectOption[]> {
     return this.http.post<FlowResponse>(this.urlProjects, {}).pipe(
@@ -33,6 +34,20 @@ export class ProjectsService {
 
   listStatus(): Observable<SelectOption[]> {
     return this.http.post<FlowResponse>(this.urlStatus, {}).pipe(
+      map(json => {
+        const rows =
+          json?.data?.items ??
+          json?.items ??
+          json?.ResultSets?.Table1 ??
+          [];
+        // Mapea a {label, value}. Usa las columnas reales de tu BD/Flow.
+        return rows;
+      })
+    );
+  }
+
+  listSupport(): Observable<SelectOption[]> {
+    return this.http.post<FlowResponse>(this.urlSupport, {}).pipe(
       map(json => {
         const rows =
           json?.data?.items ??

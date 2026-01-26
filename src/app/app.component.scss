@@ -5,28 +5,19 @@
 }
 
 .app-layout {
-  height: 100%;
+  min-height: 100vh;
 }
 
+/* SIDEBAR */
 .menu-sidebar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 10;
-  min-height: 100vh;
+  height: 100vh;
   box-shadow: 2px 0 6px rgba(0,21,41,.35);
 }
 
-.header-trigger {
-  height: 64px;
-  padding: 20px 24px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all .3s,padding 0s;
-}
-
-.trigger:hover {
-  color: #1890ff;
-}
-
+/* LOGO */
 .sidebar-logo {
   position: relative;
   height: 64px;
@@ -36,26 +27,6 @@
   background: #001529;
   transition: all .3s;
 }
-
-.sidebar-mini-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  height: 64px;
-  padding-left: 0px;
-  overflow: hidden;
-  line-height: 64px;
-  background: #001529;
-  transition: all .3s;
-  img {
-    display: inline-block;
-    height: 25px !important;
-    width: 45px !important;
-    vertical-align: middle;
-  }
-}
-
 .sidebar-logo img {
   display: inline-block;
   height: 40px;
@@ -63,49 +34,26 @@
   vertical-align: middle;
 }
 
-.sidebar-logo h1 {
-  display: inline-block;
-  margin: 0 0 0 20px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 14px;
-  font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
-  vertical-align: middle;
-}
-
-nz-header {
-  padding: 0;
-  width: 100%;
-  z-index: 2;
-}
-
-.app-header {
-  position: relative;
+.sidebar-mini-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 64px;
-  padding: 0;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  padding-left: 0px;
+  background: #001529;
+  transition: all .3s;
+
+  img {
+    height: 25px !important;
+    width: 45px !important;
+  }
 }
 
-nz-content {
-  margin: 24px;
-}
-
-.inner-content {
-  padding: 24px;
-  background: #fff;
-  height: 100%;
-}
-
-.title {
-  font-weight: 500;
-  font-size: 16px;
-  color: #333;
-}
-
+/* HEADER */
 .custom-header {
   display: flex;
   align-items: center;
+  gap: 8px;
   height: 64px;
   padding: 0 16px;
   background: #fff;
@@ -115,10 +63,25 @@ nz-content {
 .header-trigger {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  font-size: 18px;
+  border-radius: 10px;
+
+  &:hover { background: #f5f5f5; }
 
   [nz-icon] { font-size: 20px; }
+}
+
+.title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .spacer { flex: 1; }
@@ -126,11 +89,129 @@ nz-content {
 .user-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   cursor: pointer;
+  max-width: 55vw;
 
-  .user-name { font-weight: 500; color: #595959; }
+  .user-name {
+    font-weight: 500;
+    color: #595959;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .mr-1 { margin-right: 4px; }
 .ml-1 { margin-left: 4px; }
+
+/* CONTENT */
+.app-content {
+  padding: 24px;
+  background: #f7f8fa;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.inner-content {
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+
+  /* 👇 ancho por defecto desktop */
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Desktop grande */
+@media (min-width: 1400px) {
+  .inner-content { max-width: 1600px; }
+}
+
+/* Desktop muy grande */
+@media (min-width: 1800px) {
+  .inner-content { max-width: 1800px; }
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .app-content { padding: 16px; }
+  .inner-content {
+    max-width: none !important;
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .app-content { padding: 10px; }
+  .inner-content {
+    max-width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .user-trigger .ml-1 { display: none; }
+}
+
+/* ================= DRAWER (mobile) ================= */
+
+/* Fondo del drawer completo */
+:host ::ng-deep .mobile-drawer .ant-drawer-content {
+  background: #001529;
+  color: #fff;
+}
+
+/* Header del drawer */
+:host ::ng-deep .mobile-drawer .ant-drawer-header {
+  background: #001529;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* Título y botón cerrar en blanco */
+:host ::ng-deep .mobile-drawer .ant-drawer-title,
+:host ::ng-deep .mobile-drawer .ant-drawer-close {
+  color: #fff;
+}
+
+/* Body sin padding */
+:host ::ng-deep .mobile-drawer .ant-drawer-body {
+  padding: 0;
+  background: #001529 !important;
+}
+
+/* Logo drawer */
+.drawer-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #001529;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+
+  img { height: 34px; }
+}
+
+/* Menu drawer */
+:host ::ng-deep .mobile-drawer .ant-menu {
+  background: transparent;
+  border-right: 0;
+}
+
+/* Hover / selected */
+:host ::ng-deep .mobile-drawer .ant-menu-item:hover,
+:host ::ng-deep .mobile-drawer .ant-menu-submenu-title:hover {
+  background: rgba(255,255,255,.08);
+}
+
+:host ::ng-deep .mobile-drawer .ant-menu-item-selected {
+  background: rgba(24,144,255,.22);
+}
+
+/* Quita el “borde” raro del submenu */
+:host ::ng-deep .mobile-drawer .ant-menu-inline,
+:host ::ng-deep .mobile-drawer .ant-menu-vertical {
+  border-right: 0;
+}

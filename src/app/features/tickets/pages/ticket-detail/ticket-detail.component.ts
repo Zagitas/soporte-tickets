@@ -141,6 +141,7 @@ export class TicketDetailComponent implements OnInit {
       const detail = await firstValueFrom(
         this.tickets.getTicketDetail({ id: this.id(), number: this.number() })
       );
+      this.setTicket(detail);
 
       if (detail) {
         const statusObj = this.status().find(s => s.value === detail.status);
@@ -178,6 +179,18 @@ export class TicketDetailComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private setTicket(detail: any | null) {
+    if (!detail) {
+      this.ticket.set(null);
+      return;
+    }
+
+    const statusObj = this.status().find(s => s.value === detail.status);
+    detail.statusLabel = statusObj ? statusObj.label : '';
+    
+    this.ticket.set(detail);
   }
 
   // Navegación a edición: usar query param ?mode=edit
@@ -258,6 +271,8 @@ export class TicketDetailComponent implements OnInit {
       const refreshed = await firstValueFrom(
         this.tickets.getTicketDetail({ id: this.id(), number: this.number() })
       );
+
+      this.setTicket(refreshed);
 
       if (refreshed) {
         const statusObj = this.status().find(s => s.value === refreshed.status);

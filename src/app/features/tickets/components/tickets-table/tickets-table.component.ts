@@ -43,6 +43,16 @@ export class TicketsTableComponent {
 
   trackById = (_: number, t: Ticket) => t.id;
 
+  updateTicketInTable(updated: Partial<TicketWithSla> & { id: string }) {
+    const index = this.tickets.findIndex(t => t.id === updated.id);
+    if (index === -1) return;
+
+    this.tickets[index] = { ...this.tickets[index], ...updated };
+
+    // Forzamos detección de cambios para OnPush
+    this.tickets = [...this.tickets];
+  }
+
   sort(field: keyof Ticket, evt: any) {
     const dir: SortDir =
       evt === 'ascend' || evt?.value === 'ascend' ? 'ascend' :

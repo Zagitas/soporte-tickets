@@ -1,12 +1,17 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .tickets-table {
   width: 100%;
 
   .mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .assignee { display:flex; align-items:center; gap:8px; }
-  .text-right { text-align:right; white-space: nowrap; }
+  .assignee { display: flex; align-items: center; gap: 8px; }
+  .text-right { text-align: right; white-space: nowrap; }
 
   .truncate {
-    max-width: 520px;
+    max-width: 420px;
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -17,15 +22,38 @@
   .row-hover:hover { background: #f8fafc; }
   .pill { border-radius: 9999px; }
   .dot {
-    width: 8px; height: 8px; border-radius: 9999px;
-    display: inline-block; margin-right: 6px; vertical-align: 1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: 1px;
     box-shadow: 0 0 0 2px #fff;
   }
 }
 
-/* ❌ elimina este override que tenías:
-:host ::ng-deep .ant-table-body { overflow: visible !important; }
-*/
+/* ✅ fuerza que el wrapper del table use 100% */
+:host ::ng-deep .ant-table-wrapper,
+:host ::ng-deep .ant-table,
+:host ::ng-deep .ant-table-container,
+:host ::ng-deep .ant-table-content {
+  width: 100%;
+}
 
-/* Si dejaste un wrapper propio, fuerza ancho */
-:host, :host ::ng-deep .ant-table-wrapper { display:block; width:100%; }
+/* ✅ permite scroll horizontal cuando sea necesario */
+:host ::ng-deep .ant-table-content {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile tweaks */
+@media (max-width: 576px) {
+  .tickets-table {
+    .truncate { max-width: 200px; }
+    .title-col { max-width: 220px; }
+    .assignee-name { max-width: 120px; }
+
+    .actions .btn-text { display: none; }
+    .actions button { padding: 0 10px; }
+  }
+}

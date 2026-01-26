@@ -22,6 +22,8 @@ import { SelectOption, Ticket, TicketFilters } from '../../models/ticket.model';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { UsersService } from '../../data/users.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { TicketsCardComponent } from '../../components/tickets-cards/tickets-cards.component';
 
 type SortDir = 'ascend' | 'descend' | null;
 
@@ -35,7 +37,7 @@ type SortDir = 'ascend' | 'descend' | null;
     NzTagModule,
     NzMenuModule,
     NzModalModule,
-    TicketFiltersComponent, TicketsTableComponent
+    TicketFiltersComponent, TicketsTableComponent, TicketsCardComponent
   ],
   templateUrl: './ticket-list.component.html',
   styleUrls: ['./ticket-list.component.scss']
@@ -76,6 +78,14 @@ export class TicketListComponent implements OnInit {
   pageIndex = 1;
   pageSize = 5;
   pageSizeOptions = [5, 8, 10];
+
+  isMobile = false;
+  
+  constructor(private bo: BreakpointObserver) {
+    this.bo.observe([Breakpoints.Handset]).subscribe(r => {
+      this.isMobile = r.matches;
+    });
+  }
 
   ngOnInit(): void {
     this.loadProjects();

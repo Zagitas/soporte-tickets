@@ -20,8 +20,10 @@ export interface CreateTicketQuery {
   description: string;
   priority: 'high'|'medium'|'low';
   status: string;
+  supportType: string;
   assignedEmail?: string;
   createdByEmail?: string;
+  requestedAt?: string | null;
 }
 
 type FlowRow = any;

@@ -1,0 +1,53 @@
+<div class="ticket-cards" *ngIf="!loading; else sk">
+  <nz-card class="ticket-card" *ngFor="let t of tickets; trackBy: trackById">
+    <div class="head">
+      <div class="id mono">#{{ t.id }}</div>
+      <nz-tag [nzColor]="statusColor(t.status)">{{ t.statusLabel }}</nz-tag>
+    </div>
+
+    <div class="title" [nz-tooltip]="t.title">{{ t.title }}</div>
+
+    <div class="meta">
+      <div class="row">
+        <span class="label">Project</span>
+        <span class="value">{{ t.projectName }}</span>
+      </div>
+
+      <div class="row">
+        <span class="label">Priority</span>
+        <nz-tag [nzColor]="prioColor(t.priority)" class="pill">
+          <span class="dot" [style.background]="prioDot(t.priority)"></span>
+          {{ t.priority }}
+        </nz-tag>
+      </div>
+
+      <div class="row">
+        <span class="label">Assigned</span>
+        <span class="value">
+          <nz-avatar [nzText]="initials(t.assignedTo?.name)" nzSize="small"></nz-avatar>
+          <span class="assignee-name">{{ t.assignedTo?.name || 'Sin asignar' }}</span>
+        </span>
+      </div>
+
+      <div class="row">
+        <span class="label">Created</span>
+        <span class="value">{{ t.createdDate | date:'yyyy-MM-dd' }}</span>
+      </div>
+
+      <nz-tag *ngIf="t.slaBreached" nzColor="red">SLA</nz-tag>
+    </div>
+
+    <div class="actions">
+      <button nz-button nzType="default" (click)="ticketView.emit(t)">
+        <span nz-icon nzType="eye"></span> See
+      </button>
+      <button nz-button nzType="default" (click)="ticketEdit.emit(t)">
+        <span nz-icon nzType="edit"></span> Edit
+      </button>
+    </div>
+  </nz-card>
+</div>
+
+<ng-template #sk>
+  <nz-skeleton [nzActive]="true"></nz-skeleton>
+</ng-template>

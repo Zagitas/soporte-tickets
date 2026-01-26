@@ -4,14 +4,29 @@
   background: #f7f8fa;
 }
 
-.page-header {
-  margin-bottom: 12px;
-  .ant-page-header-heading-extra .ant-btn + .ant-btn { margin-left: 8px; }
+/* contenedor general */
+.page-shell {
+  max-width: 1500px;
+  margin: 0 auto;
 }
 
+/* Header */
+.page-header {
+  margin-bottom: 12px;
+}
+
+/* Botones del header */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* KPIs */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin: 12px 0 16px;
 
@@ -19,6 +34,7 @@
   .danger .ant-statistic-content { color: #ef4444; }
 }
 
+/* Chips (si los vuelves a habilitar) */
 .applied-filters {
   display: flex;
   align-items: center;
@@ -33,6 +49,16 @@
   .label { color: #475569; font-size: 12px; }
 }
 
+/* Card tabla */
+.table-card {
+  border-radius: 12px;
+}
+
+.table-hint {
+  margin-bottom: 8px;
+}
+
+/* Footer tabla */
 .table-footer {
   margin-top: 8px;
   padding-top: 12px;
@@ -43,6 +69,7 @@
   gap: 12px;
 
   .muted { color: #64748b; }
+
   .footer-actions {
     display: flex;
     align-items: center;
@@ -50,9 +77,92 @@
   }
 }
 
+/* ---------- TABLET ---------- */
 @media (max-width: 992px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
+  :host { padding: 16px; }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .table-footer {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .footer-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
 }
+
+/* ---------- CELULAR ---------- */
 @media (max-width: 576px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  :host { padding: 12px; }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* oculta textos y deja solo iconos en mobile */
+  .btn-text {
+    display: none;
+  }
+
+  .table-footer {
+    .footer-actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .footer-actions button {
+      width: 100%;
+    }
+
+    :host ::ng-deep nz-pagination {
+      width: 100%;
+      display: block;
+    }
+  }
+}
+
+/* ================= PAGE HEADER – MOBILE ================= */
+@media (max-width: 576px) {
+
+  /* Contenedor del title + subtitle */
+  :host ::ng-deep .page-header .ant-page-header-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  /* Subtitle debajo del title */
+  :host ::ng-deep .page-header .ant-page-header-heading-sub-title {
+    margin-left: 0 !important;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  /* Ajuste opcional del title */
+  :host ::ng-deep .page-header .ant-page-header-heading-title {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 576px) {
+  :host ::ng-deep .page-header .ant-page-header-heading-extra {
+    margin-top: 8px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .btn-text {
+    display: none; /* solo iconos en mobile */
+  }
 }

@@ -7,30 +7,62 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TimeAgoPipe implements PipeTransform {
   transform(value?: string | number | Date): string {
     if (!value) return '';
-    const date = value instanceof Date ? value : new Date(value);
-    const diff = (Date.now() - date.getTime()) / 1000;
 
-    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-    const ranges: [number, Intl.RelativeTimeFormatUnit][] = [
-      [60, 'second'],
-      [60, 'minute'],
-      [24, 'hour'],
-      [7,  'day'],
-      [4.34524, 'week'],
-      [12, 'month'],
-      [Number.POSITIVE_INFINITY, 'year']
-    ];
+    let date: Date;
 
-    let duration = diff;
-    let unit: Intl.RelativeTimeFormatUnit = 'second';
-
-    for (const [amount, nextUnit] of ranges) {
-      if (Math.abs(duration) < amount) break;
-      duration /= amount;
-      unit = nextUnit;
+    if (value instanceof Date) {
+      date = value;
+    } else if (typeof value === 'string') {
+      // Soporta 'YYYY-MM-DD HH:mm' y 'YYYY-MM-DDTHH:mm'
+      const normalized = value.replace('T', ' ');
+      const [d, t] = normalized.split(' ');
+      const [y, m, day] = d.split('-').map(Number);
+      const [h, min] = t.split(':').map(Number);
+      date = new Date(y, m - 1, day, h, min);
+    } else {
+      date = new Date(value);
     }
 
-    const rounded = Math.round(-duration); // pasado → negativo para rtf
-    return rtf.format(rounded, unit);
+    if (isNaN(date.getTime())) return '';
+
+    const diffMs = Date.now() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+
+    const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+
+    const minute = 60;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+    const month = 30 * day;
+    const year = 365 * day;
+
+    if (diffSec < minute) {
+      return rtf.format(-diffSec, 'second');
+    }
+
+    if (diffSec < hour) {
+      return rtf.format(-Math.round(diffSec / minute), 'minute');
+    }
+
+    if (diffSec < day) {
+      return rtf.format(-Math.round(diffSec / hour), 'hour');
+    }
+
+    if (diffSec < week) {
+      return rtf.format(-Math.round(diffSec / day), 'day');
+    }
+
+    if (diffSec < month) {
+      return rtf.format(-Math.round(diffSec / week), 'week');
+    }
+
+    if (diffSec < year) {
+      return rtf.format(-Math.round(diffSec / month), 'month');
+    }
+
+    return rtf.format(-Math.round(diffSec / year), 'year');
   }
+
+
 }

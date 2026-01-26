@@ -20,7 +20,8 @@ export const environment = {
     options: {
       projects: 'https://c5ddbf3c88afef3a874075a39aeefd.ed.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/368a1ce60d57476281de289e39f89ed8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=saPDuT413Dvo5HPpgFMQ-eiMALYV8ihp8VFKVaSESNM',
       status: 'https://c5ddbf3c88afef3a874075a39aeefd.ed.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c33386dbec7243ca82babbc6e52232cd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sqkkveYfp3TbXBquKNEio4LuiXqxFghNhFyhkoWMGLs',
-      users: 'https://c5ddbf3c88afef3a874075a39aeefd.ed.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/770d9595002842a5b07923f9aa70d6dc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kwaygewLJ1w0fUGM_LYu7UHU_QtQqVXtMQQgQ8IZGGc'
+      users: 'https://c5ddbf3c88afef3a874075a39aeefd.ed.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/770d9595002842a5b07923f9aa70d6dc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=kwaygewLJ1w0fUGM_LYu7UHU_QtQqVXtMQQgQ8IZGGc',
+      support: 'https://c5ddbf3c88afef3a874075a39aeefd.ed.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d3433fbd88e74d80a7cd864e2d760c44/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9Xcz1XMO9BSmDXaijqLyeCdfsSKCggzZyjtPVsy2BAk'
     }
   }
 };

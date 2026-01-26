@@ -1,122 +1,105 @@
-<nz-page-header class="page-header" nzTitle="Tickets"
-                nzSubtitle="Manage and monitor your requests">
-  <nz-page-header-tags>
-    <nz-tag nzColor="blue">v1.0</nz-tag>
-  </nz-page-header-tags>
+<div class="page-shell">
+  <nz-page-header class="page-header" nzTitle="Tickets" nzSubtitle="Manage and monitor your requests">
+    <nz-page-header-tags>
+      <nz-tag nzColor="blue">v1.0</nz-tag>
+    </nz-page-header-tags>
 
-  <nz-page-header-extra>
-    <button nz-button nzType="default" nz-tooltip nzTooltipTitle="Refrescar" (click)="refresh()">
-      <span nz-icon nzType="reload"></span>
-    </button>
-
-    <!-- <button nz-button nzType="default" nz-dropdown [nzDropdownMenu]="viewMenu">
-      <span nz-icon nzType="layout"></span>
-      Vista
-    </button>
-
-    <nz-dropdown-menu #viewMenu="nzDropdownMenu">
-      <ul nz-menu>
-        <li nz-menu-item (click)="density='default'">
-          <span nz-icon nzType="column-height"></span> Cómodo
-        </li>
-        <li nz-menu-item (click)="density='small'">
-          <span nz-icon nzType="vertical-align-middle"></span> Compacto
-        </li>
-      </ul>
-    </nz-dropdown-menu> -->
-
-    <button nz-button nzType="primary" (click)="newTicket()">
-      <span nz-icon nzType="plus"></span>
-      New ticket
-    </button>
-  </nz-page-header-extra>
-</nz-page-header>
-
-<!-- KPIs -->
-<div class="stats-grid">
-  <nz-card nzSize="small" class="stat">
-    <nz-statistic [nzTitle]="'Total'" [nzValue]="filteredTickets.length" [nzSuffix]="'📊'"></nz-statistic>
-  </nz-card>
-  <nz-card nzSize="small" class="stat">
-    <nz-statistic [nzTitle]="'Open'" [nzValue]="kpis.open" [nzSuffix]="'📬'"></nz-statistic>
-  </nz-card>
-  <nz-card nzSize="small" class="stat">
-    <nz-statistic [nzTitle]="'In progress'" [nzValue]="kpis.inProgress" [nzSuffix]="'⏳'"></nz-statistic>
-  </nz-card>
-  <nz-card nzSize="small" class="stat">
-    <nz-statistic [nzTitle]="'Closed'" [nzValue]="kpis.closed" [nzSuffix]="'🔒'"></nz-statistic>
-  </nz-card>
-  <!-- <nz-card nzSize="small" class="stat danger">
-    <nz-statistic [nzTitle]="'SLA vencidos'" [nzValue]="kpis.breachedSla" [nzSuffix]="'⚠️'"></nz-statistic>
-  </nz-card> -->
-</div>
-
-<!-- Filtros -->
-<app-ticket-filters
-  [projects]="projects"
-  [projectsLoading]="projectsLoading"
-  [statuses]="statuses"
-  [priorities]="priorities"
-  (filtersChange)="onFiltersChange($event)">
-</app-ticket-filters>
-
-<!-- Chips de filtros activos -->
-<!-- <div class="applied-filters" *ngIf="appliedChips.length">
-  <span class="label">Filtros:</span>
-  <nz-tag *ngFor="let chip of appliedChips"
-          nzClosable
-          (nzOnClose)="removeFilterChip(chip.key)">
-    {{ chip.label }}: {{ chip.value }}
-  </nz-tag>
-  <button nz-button nzType="link" (click)="clearAllFilters()">Limpiar todo</button>
-</div> -->
-
-<!-- Tabla -->
-<nz-card [nzLoading]="loading">
-  <div class="muted" style="margin-bottom:8px">
-    Showing {{ pagedTickets.length || 0 }} records in the table
-  </div>
-
-  <app-tickets-table
-    [tickets]="pagedTickets"
-    [density]="density"
-    [loading]="loading"
-    (ticketView)="onTicketView($event)"
-    (ticketEdit)="onTicketEdit($event)"
-    (ticketDelete)="onTicketDelete($event)"
-    (sortChange)="onSortChange($event)">
-  </app-tickets-table>
-
-  <ng-template [ngIf]="!pagedTickets.length && !loading">
-    <nz-empty [nzNotFoundContent]="'No tickets found'">
-      <ng-template #extra>
-        <button nz-button nzType="primary" (click)="newTicket()">
-          <span nz-icon nzType="plus"></span> Crear el primero
+    <nz-page-header-extra>
+      <div class="header-actions">
+        <button nz-button nzType="default" nz-tooltip nzTooltipTitle="Refrescar" (click)="refresh()">
+          <span nz-icon nzType="reload"></span>
         </button>
-      </ng-template>
-    </nz-empty>
-  </ng-template>
 
-  <div class="table-footer">
-    <span class="muted">
-      Showing {{ rangeStart }}–{{ rangeEnd }} de {{ filteredTickets.length }}
-    </span>
+        <button nz-button nzType="primary" (click)="newTicket()">
+          <span nz-icon nzType="plus"></span>
+          <span class="btn-text">New ticket</span>
+        </button>
+      </div>
+    </nz-page-header-extra>
+  </nz-page-header>
 
-    <div class="footer-actions">
-      <button nz-button nzType="default" nz-tooltip nzTooltipTitle="Export CSV" (click)="exportCSV()">
-        <span nz-icon nzType="download"></span> Export
-      </button>
-
-      <nz-pagination
-        [nzTotal]="filteredTickets.length"
-        [(nzPageIndex)]="pageIndex"
-        [(nzPageSize)]="pageSize"
-        [nzPageSizeOptions]="pageSizeOptions"
-        [nzShowQuickJumper]="false"
-        [nzShowSizeChanger]="false"
-        (nzPageIndexChange)="onPageChange($event)"
-        (nzPageSizeChange)="onPageSizeChange($event)">
-      </nz-pagination>
-    </div>
+  <!-- KPIs -->
+  <div class="stats-grid">
+    <nz-card nzSize="small" class="stat">
+      <nz-statistic [nzTitle]="'Total'" [nzValue]="filteredTickets.length" [nzSuffix]="'📊'"></nz-statistic>
+    </nz-card>
+    <nz-card nzSize="small" class="stat">
+      <nz-statistic [nzTitle]="'Open'" [nzValue]="kpis.open" [nzSuffix]="'📬'"></nz-statistic>
+    </nz-card>
+    <nz-card nzSize="small" class="stat">
+      <nz-statistic [nzTitle]="'In progress'" [nzValue]="kpis.inProgress" [nzSuffix]="'⏳'"></nz-statistic>
+    </nz-card>
+    <nz-card nzSize="small" class="stat">
+      <nz-statistic [nzTitle]="'Closed'" [nzValue]="kpis.closed" [nzSuffix]="'🔒'"></nz-statistic>
+    </nz-card>
   </div>
-</nz-card>
+
+  <!-- Filtros -->
+  <app-ticket-filters
+    [projects]="projects"
+    [projectsLoading]="projectsLoading"
+    [statuses]="statuses"
+    [priorities]="priorities"
+    (filtersChange)="onFiltersChange($event)">
+  </app-ticket-filters>
+
+  <!-- Tabla -->
+  <nz-card [nzLoading]="loading" class="table-card">
+    <div class="muted table-hint">
+      Showing {{ pagedTickets.length || 0 }} records in the table
+    </div>
+
+    <app-tickets-table
+      *ngIf="!isMobile"
+      [tickets]="pagedTickets"
+      [density]="density"
+      [loading]="loading"
+      (ticketView)="onTicketView($event)"
+      (ticketEdit)="onTicketEdit($event)"
+      (ticketDelete)="onTicketDelete($event)"
+      (sortChange)="onSortChange($event)">
+    </app-tickets-table>
+
+    <app-tickets-cards
+      *ngIf="isMobile"
+      [tickets]="pagedTickets"
+      [loading]="loading"
+      (ticketView)="onTicketView($event)"
+      (ticketEdit)="onTicketEdit($event)">
+    </app-tickets-cards>
+
+    <ng-template [ngIf]="!pagedTickets.length && !loading">
+      <nz-empty [nzNotFoundContent]="'No tickets found'">
+        <ng-template #extra>
+          <button nz-button nzType="primary" (click)="newTicket()">
+            <span nz-icon nzType="plus"></span> Crear el primero
+          </button>
+        </ng-template>
+      </nz-empty>
+    </ng-template>
+
+    <div class="table-footer">
+      <span class="muted">
+        Showing {{ rangeStart }}–{{ rangeEnd }} de {{ filteredTickets.length }}
+      </span>
+
+      <div class="footer-actions">
+        <button nz-button nzType="default" nz-tooltip nzTooltipTitle="Export CSV" (click)="exportCSV()">
+          <span nz-icon nzType="download"></span>
+          <span class="btn-text">Export</span>
+        </button>
+
+        <nz-pagination
+          [nzTotal]="filteredTickets.length"
+          [(nzPageIndex)]="pageIndex"
+          [(nzPageSize)]="pageSize"
+          [nzPageSizeOptions]="pageSizeOptions"
+          [nzShowQuickJumper]="false"
+          [nzShowSizeChanger]="false"
+          (nzPageIndexChange)="onPageChange($event)"
+          (nzPageSizeChange)="onPageSizeChange($event)">
+        </nz-pagination>
+      </div>
+    </div>
+  </nz-card>
+</div>

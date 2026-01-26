@@ -17,6 +17,7 @@ import { NzMessageModule, NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 
 import { SelectOption } from '../../models/ticket.model';
 import { CreateTicketQuery, TicketsService } from '../../data/tickets.service';
@@ -42,7 +43,7 @@ function toNzUploadFileFromFile(f: File): NzUploadFile {
   selector: 'app-ticket-form',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule, NzDatePickerModule,
     NzGridModule, NzCardModule, NzFormModule, NzInputModule, NzSelectModule,
     NzButtonModule, NzTypographyModule, NzPageHeaderModule, NzUploadModule,
     NzIconModule, NzMessageModule, NzModalModule, NzToolTipModule, NzDividerModule
@@ -59,6 +60,7 @@ export class TicketFormComponent implements OnInit {
   private ticketsSvc = inject(TicketsService);
   private projectsSvc = inject(ProjectsService);
   private usersSvc = inject(UsersService);
+  private supportSvc = inject(ProjectsService);
 
   /** Constantes accesibles desde el template */
   readonly MIN_DESC = 10;
@@ -85,10 +87,19 @@ export class TicketFormComponent implements OnInit {
     { label: 'Lisa Anderson', value: 'lisa.anderson@example.com' }
   ];
 
+  supportTypes: SelectOption[] = [
+    { label: 'Technical Support', value: 'technical' },
+    { label: 'Functional Support', value: 'functional' },
+    { label: 'Bug Fix', value: 'bug' },
+    { label: 'Enhancement', value: 'enhancement' }
+  ];
+
   // Upload state (almacenamos y evitamos auto-upload)
   fileList: NzUploadFile[] = [];
 
   form = this.fb.group({
+    requestDate: [null, Validators.required],
+    supportType: ['', Validators.required],
     projectSlug: ['', Validators.required],
     priority: ['', Validators.required],
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -100,6 +111,10 @@ export class TicketFormComponent implements OnInit {
     this.projectsSvc.listProjects().subscribe({
       next: (opts) => (this.projects = opts ?? []),
       error: () => (this.projects = [])
+    });
+    this.supportSvc.listSupport().subscribe({
+      next: (opts) => (this.supportTypes = opts ?? []),
+      error: () => (this.supportTypes = [])
     });
   }
 
@@ -169,8 +184,10 @@ export class TicketFormComponent implements OnInit {
       description: this.f.description.value!.trim(),
       priority: this.f.priority.value! as 'high'|'medium'|'low',
       status: 'OPEN',
+      supportType: this.f.supportType.value!,
       assignedEmail: this.usersSvc.userEmail || '',
-      createdByEmail: this.usersSvc.userEmail || ''
+      createdByEmail: this.usersSvc.userEmail || '',
+      requestedAt: this.f.requestDate.value ? (this.f.requestDate.value as Date).toISOString() : null
     };
 
     try {
@@ -185,7 +202,7 @@ export class TicketFormComponent implements OnInit {
       }
 
       // 3) Modal de éxito
-      this.modal.success({
+      const modalRef = this.modal.success({
         nzTitle: 'Ticket created',
         nzContent: `
           <div>
@@ -199,6 +216,10 @@ export class TicketFormComponent implements OnInit {
         `,
         nzOkText: 'Go to list',
         nzOnOk: () => this.router.navigateByUrl('/tickets')
+      });
+
+      modalRef.afterClose.subscribe(() => {
+        this.router.navigateByUrl('/tickets');
       });
 
       this.form.disable();

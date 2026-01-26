@@ -10,6 +10,8 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { UsersService } from './features/tickets/data/users.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,8 @@ import { UsersService } from './features/tickets/data/users.service';
     NzLayoutModule, 
     NzMenuModule,
     NzDropDownModule,
-    NzToolTipModule
+    NzToolTipModule,
+    NzDrawerModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
@@ -38,10 +41,19 @@ export class AppComponent implements OnInit {
   userRol = 0;
   loading = false;
 
+  isMobile = false;
+  drawerVisible = false;
+
   constructor(
     private msalService: MsalService,
-    private msalBroadcast: MsalBroadcastService
-  ) {}
+    private msalBroadcast: MsalBroadcastService,
+    private bo: BreakpointObserver
+  ) {
+    this.bo.observe([Breakpoints.Handset]).subscribe(r => {
+    this.isMobile = r.matches;
+    if (!this.isMobile) this.drawerVisible = false;
+  });
+  }
 
   async ngOnInit(): Promise<void> {
     try {
