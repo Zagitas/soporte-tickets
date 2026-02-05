@@ -26,7 +26,6 @@ export class AuthService {
     this.msalService.acquireTokenSilent(scopesConfig).subscribe({
       next: (result) => {
         const token = result.accessToken;
-        console.log('Token para API:', token);
         // Aquí puedes almacenarlo si deseas: localStorage.setItem('apiToken', token);
       },
       error: (error) => {

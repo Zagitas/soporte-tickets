@@ -26,6 +26,14 @@
       <div nz-col [nzXs]="24" [nzMd]="12">
         <div class="summary-grid">
           <div>
+            <div class="muted">Request Date</div>
+            <div>{{ ticket()?.request_date ? (ticket()?.request_date | date:'mediumDate') : '—' }}</div>
+          </div>
+          <div>
+            <div class="muted">Support Type</div>
+            <div>{{ ticket()?.supportsLabel || '—' }}</div>
+          </div>
+          <div>
             <div class="muted">Status</div>
             <nz-tag [nzColor]="statusColor(ticket()?.status)">
               {{ (ticket()?.statusLabel || '—') | titlecase }}
@@ -36,6 +44,18 @@
             <nz-tag [nzColor]="priorityColor(ticket()?.priority)">
               {{ (ticket()?.priority || '—') | titlecase }}
             </nz-tag>
+          </div>
+          <div>
+            <div class="muted">Estimated time</div>
+            <div>
+              {{ ticket()?.estimated_time ? ticket()?.estimated_time + ' horas' : '—' }}
+            </div>
+          </div>
+          <div>
+            <div class="muted">Time spent</div>
+            <div>
+              {{ ticket()?.time_spent ? ticket()?.time_spent + ' horas' : '—' }}
+            </div>
           </div>
           <div>
             <div class="muted">Project</div>
@@ -65,7 +85,9 @@
           <p class="prewrap" *ngIf="ticket()?.description; else noDesc">
             {{ ticket()?.description }}
           </p>
-          <ng-template #noDesc><span class="muted">No description provided.</span></ng-template>
+          <ng-template #noDesc>
+            <span class="muted">No description provided.</span>
+          </ng-template>
         </ng-container>
       </nz-tab>
 
@@ -152,16 +174,15 @@
       <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
         <label class="lbl">Status</label>
         <nz-select formControlName="status" nzAllowClear nzPlaceHolder="Select a status">
-          <nz-option *ngFor="let p of status()" [nzLabel]="p.label" [nzValue]="p.id"></nz-option>
+          <nz-option
+            *ngFor="let p of status()"
+            [nzLabel]="p.label"
+            [nzValue]="p.id"
+            [nzDisabled]="isStatusDisabled(p)">
+          </nz-option>
         </nz-select>
       </div>
 
-      <!-- <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
-        <label class="lbl">Status</label>
-        <nz-select formControlName="status">
-          <nz-option *ngFor="let s of statuses" [nzLabel]="s.label" [nzValue]="s.value"></nz-option>
-        </nz-select>
-      </div> -->
       <div nz-col [nzXs]="24" [nzMd]="6" class="form-group">
         <label class="lbl">Priority</label>
         <nz-select formControlName="priority">
@@ -170,11 +191,36 @@
       </div>
     </div>
 
-    <div *ngIf="userRol === 4" nz-col [nzXs]="24" [nzMd]="12" class="form-group">
-      <label class="lbl">Assignee</label>
-      <nz-select formControlName="assigned_to" nzAllowClear nzPlaceHolder="Unassigned">
-        <nz-option *ngFor="let u of users()" [nzLabel]="u.label" [nzValue]="u.id"></nz-option>
-      </nz-select>
+    <!-- TIME TRACKING -->
+    <div class="mt-4">
+      <div nz-row [nzGutter]="16">
+        <div [class.is-hidden]="userRol === 1 || userRol === 2" nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+          <label class="lbl">Estimated time (hours)</label>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            step="0.25"
+            formControlName="estimated_time" />
+        </div>
+
+        <div [class.is-hidden]="userRol === 1 || userRol === 2 || form.get('status')?.value !== 'RESOLVED'" nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+          <label class="lbl">Time spent (hours)</label>
+          <input
+            nz-input
+            type="number"
+            min="0"
+            step="0.25"
+            formControlName="time_spent" />
+        </div>
+
+        <div *ngIf="userRol === 4" nz-col [nzXs]="24" [nzMd]="12" class="form-group">
+          <label class="lbl">Assignee</label>
+          <nz-select formControlName="assigned_to" nzAllowClear nzPlaceHolder="Unassigned">
+            <nz-option *ngFor="let u of users()" [nzLabel]="u.label" [nzValue]="u.id"></nz-option>
+          </nz-select>
+        </div>
+      </div>
     </div>
 
     <div class="actions">

@@ -23,6 +23,7 @@ import { TicketsService } from '../../data/tickets.service';
 import { EXTENSION_RECORD } from '../../../shared/interface/extension';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { UsersService } from '../../data/users.service';
+import { ProjectsService } from '../../data/projects.service';
 
 // type DetailTabKey = 'summary'|'timeline'|'attachments';
 type DetailTabKey = 'summary'|'attachments';
@@ -41,9 +42,18 @@ type DetailTabKey = 'summary'|'attachments';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TicketDetailComponent implements OnInit {
+
+  supportTypes = [
+    { label: 'Technical', value: 'technical' },
+    { label: 'Billing', value: 'billing' },
+    { label: 'General', value: 'general' }
+  ];
+
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   public  tickets = inject(TicketsService);
+  public  projectsSvc = inject(ProjectsService);
   private usersSvc = inject(UsersService);
   private msg = inject(NzMessageService);
   private fb = inject(FormBuilder);
@@ -77,6 +87,7 @@ export class TicketDetailComponent implements OnInit {
   readonly projects = signal<SelectOption[]>([]);
   readonly status = signal<SelectOption[]>([]);
   readonly users    = signal<SelectOption[]>([]);
+  readonly supports = signal<SelectOption[]>([]);
 
   // ===== Adjuntos (reactivo con señales) =====
   private originalAttachments = signal<any[]>([]);   // existentes del API (deben traer itemId/sp_item_id)
@@ -99,7 +110,11 @@ export class TicketDetailComponent implements OnInit {
     project_slug: [null as string | null],
     assigned_email: [null as string | null],
     status: [null as string | null],
-    priority: ['low' as TicketPriority, Validators.required]
+    priority: ['low' as TicketPriority, Validators.required],
+    supports: [null as string | null],
+    request_date: [null as string | null],
+    estimated_time: [null as number | null],
+    time_spent: [null as number | null]
   });
 
   // Catálogos
@@ -129,14 +144,16 @@ export class TicketDetailComponent implements OnInit {
     try {
       this.loading.set(true);
 
-      const [proj, sta, usr] = await Promise.all([
+      const [proj, sta, usr, spp] = await Promise.all([
         firstValueFrom(this.tickets.getProjectOptions()),
         firstValueFrom(this.tickets.getStatusOptions()),
-        firstValueFrom(this.tickets.getUserOptions())
+        firstValueFrom(this.tickets.getUserOptions()),
+        firstValueFrom(this.projectsSvc.listSupport())
       ]);
       this.projects.set(proj ?? []);
       this.status.set(sta ?? []);
       this.users.set(usr ?? []);
+      this.supports.set(spp ?? []);
       
       const detail = await firstValueFrom(
         this.tickets.getTicketDetail({ id: this.id(), number: this.number() })
@@ -146,9 +163,11 @@ export class TicketDetailComponent implements OnInit {
       if (detail) {
         const statusObj = this.status().find(s => s.value === detail.status);
         detail.statusLabel = statusObj ? statusObj.label : '';
+
+        const supportsObj = this.supports().find(s => s.value === detail.supports);
+        detail.supportsLabel = supportsObj ? supportsObj.label : '';
       }
 
-      this.ticket.set(detail);
       // Adjuntos originales
       const originals = Array.isArray(detail?.attachments)
         ? detail.attachments.map((a: any) => ({
@@ -169,7 +188,11 @@ export class TicketDetailComponent implements OnInit {
           project_slug: detail.project_slug ?? null,
           assigned_email: detail.assigned_email ?? null,
           status: (detail.status).toUpperCase() ?? null,
-          priority: (detail.priority || 'low') as TicketPriority
+          supports: (detail.supports).toUpperCase() ?? null,
+          priority: (detail.priority || 'low') as TicketPriority,
+          request_date: detail.request_date ?? null,
+          estimated_time: detail.estimated_time ?? null,
+          time_spent: detail.time_spent ?? null
         });
       }
       this.userRol = this.usersSvc.idUserRol;
@@ -189,8 +212,15 @@ export class TicketDetailComponent implements OnInit {
 
     const statusObj = this.status().find(s => s.value === detail.status);
     detail.statusLabel = statusObj ? statusObj.label : '';
+
+    const supportsObj = this.supports().find(s => s.value === detail.supports);
+    detail.supportsLabel = supportsObj ? supportsObj.label : '';
     
-    this.ticket.set(detail);
+    this.ticket.set({
+      ...detail,
+      estimated_time: detail.estimated_time ?? null,
+      time_spent: detail.time_spent ?? null
+    });
   }
 
   // Navegación a edición: usar query param ?mode=edit
@@ -210,7 +240,10 @@ export class TicketDetailComponent implements OnInit {
         project_id: t.project_id ?? null,
         assigned_to: t.assigned_to ?? null,
         status: t.status ?? null,
-        priority: (t.priority || 'low') as TicketPriority
+        priority: (t.priority || 'low') as TicketPriority,
+        supports: t.supports ?? null,
+        estimated_time: t.estimated_time ?? null,
+        time_spent: t.time_spent ?? null
       });
     }
   }
@@ -262,7 +295,9 @@ export class TicketDetailComponent implements OnInit {
         status: String(raw.status ?? 'OPEN'),
         priority: String(raw.priority ?? 'low'),
         project_id: String(raw.project_id) ?? null,
-        assigned_to: String(raw.assigned_to) ?? null
+        assigned_to: String(raw.assigned_to) ?? null,
+        estimated_time: raw.estimated_time ?? null,
+        time_spent: raw.time_spent ?? null
       };
       await firstValueFrom(this.tickets.updateTicket(payload));
       await this.persistAttachments();
@@ -277,8 +312,10 @@ export class TicketDetailComponent implements OnInit {
       if (refreshed) {
         const statusObj = this.status().find(s => s.value === refreshed.status);
         refreshed.statusLabel = statusObj ? statusObj.label : '';
+        
+        const supportsObj = this.supports().find(s => s.value === refreshed.supports);
+        refreshed.supportsLabel = supportsObj ? supportsObj.label : '';
       }
-      this.ticket.set(refreshed);
 
       // resync adjuntos
       this.originalAttachments.set(Array.isArray(refreshed?.attachments)
@@ -475,6 +512,18 @@ export class TicketDetailComponent implements OnInit {
       nzContent: 'The changes to ticket ' + number + ' were saved correctly.',
       nzOkText: 'Understood'
     });
+  }
+
+  isStatusDisabled(p: any): boolean {
+    if (this.userRol === 1 || this.userRol === 2) {
+      return p.label !== 'Closed';
+    }
+
+    if (this.userRol === 3) {
+      return p.label === 'Closed';
+    }
+
+    return false;
   }
 
 }

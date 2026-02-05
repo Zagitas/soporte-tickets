@@ -78,10 +78,8 @@ export class AppComponent implements OnInit {
         this.isLoggedIn = !!acc;
         this.userName = acc?.name || '';
         this.userEmail = acc?.username || '';
-        console.log('Cambio de estado de interacción, isLoggedIn:', {acc});
         this.getUserRol();
         this.usersSvc.userEmail = this.userEmail;
-        console.log('User rol after interaction change:', this.usersSvc.idUserRol);
       });
   }
 

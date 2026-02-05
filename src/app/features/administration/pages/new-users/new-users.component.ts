@@ -122,9 +122,6 @@ export class UsersNewComponent implements OnInit {
       projectIds: this.isSupervisor() ? v.projects : null
     };
 
-    // TODO: Llama a tu servicio real
-    console.log('Crear usuario payload:', payload);
-
     this.msg.success('Usuario registrado correctamente.');
     this.router.navigateByUrl('/users'); // ajusta la ruta de retorno
   }

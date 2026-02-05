@@ -150,7 +150,6 @@ export class TicketsService {
   }
 
   private async ensureFileFromUpload(item: NzUploadFile): Promise<File> {
-    console.log('item: ', item);
     if (!item) throw new Error('item inválido');
 
     if (this.isNativeFile(item as any)) return item as any as File;
@@ -320,6 +319,11 @@ export class TicketsService {
           assigned_email: raw.assigned_email ?? null,
           status: String(raw.status_code ?? 'OPEN'),
           statusLabel: '' ,
+          supportsLabel: '' ,
+          supports: String(raw.support_id ?? raw.support_id ?? ''),
+          request_date: raw.request_date ?? raw.requested_at ?? null,
+          estimated_time: raw.estimated_time ?? null,
+          time_spent: raw.time_spent ?? null,
           priority: String(raw.priority_code ?? 'low').toLowerCase(),
           created: raw.created ?? raw.created_at ?? raw.created_date ?? raw.createdDate ?? null,
           timeline: raw.timeline ?? [],
