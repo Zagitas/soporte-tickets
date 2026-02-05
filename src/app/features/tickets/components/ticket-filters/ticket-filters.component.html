@@ -1,6 +1,6 @@
 <form nz-form class="filters">
   <div class="grid">
-    <div class="col">
+    <div *ngIf="userRol === 3 || userRol === 4" class="col">
       <label nz-form-item-required>Project</label>
       <!-- ticket-filters.component.html -->
       <nz-select
@@ -22,7 +22,7 @@
       </nz-select>
     </div>
 
-    <div class="col">
+    <div *ngIf="userRol === 3 || userRol === 4" class="col">
       <label>Priority</label>
       <nz-select [(ngModel)]="prioridad" name="prioridad" nzAllowClear nzPlaceHolder="All priorities"
                  (ngModelChange)="emit()">

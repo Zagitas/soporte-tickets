@@ -12,6 +12,7 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { UsersService } from './features/tickets/data/users.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
     NzMenuModule,
     NzDropDownModule,
     NzToolTipModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzProgressModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

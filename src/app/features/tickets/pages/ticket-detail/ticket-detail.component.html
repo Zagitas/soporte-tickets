@@ -204,7 +204,7 @@
             formControlName="estimated_time" />
         </div>
 
-        <div [class.is-hidden]="userRol === 1 || userRol === 2 || form.get('status')?.value !== 'RESOLVED'" nz-col [nzXs]="24" [nzMd]="6" class="form-group">
+        <div [class.is-hidden]="userRol === 1 || userRol === 2 " nz-col [nzXs]="24" [nzMd]="6" class="form-group">
           <label class="lbl">Time spent (hours)</label>
           <input
             nz-input

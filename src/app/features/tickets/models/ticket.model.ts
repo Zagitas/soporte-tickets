@@ -15,10 +15,13 @@ export interface Ticket {
   projectName: string;       // lo que muestras en la tabla
   projectSlug?: string;      // lo que llega como value del combo
   title: string;
+  description: string;
   priority: TicketPriority;
   status: TicketStatus;
   assignedTo?: PersonRef;
   createdDate: Date | string;
+  time_spent: number;
+  estimated_time: number;
 }
 
 export interface SelectOption {

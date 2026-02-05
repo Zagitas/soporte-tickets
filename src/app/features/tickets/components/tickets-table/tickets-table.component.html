@@ -13,12 +13,13 @@
   <thead>
     <tr>
       <th nzWidth="110px">ID</th>
-      <th nzWidth="160px" nzShowSort (nzSortChange)="sort('projectName',$event)">Project</th>
+      <th *ngIf="userRol === 3 || userRol === 4" nzWidth="160px" nzShowSort (nzSortChange)="sort('projectName',$event)">Project</th>
       <th nzWidth="260px" nzShowSort (nzSortChange)="sort('title',$event)">Title</th>
-      <th nzWidth="120px">Priority</th>
+      <th *ngIf="userRol === 3 || userRol === 4" nzWidth="120px">Priority</th>
       <th nzWidth="130px">Status</th>
+      <th *ngIf="userRol === 1 || userRol === 2" nzWidth="160px">Progress</th>
       <th nzWidth="200px">Assigned</th>
-      <th nzWidth="140px" nzShowSort (nzSortChange)="sort('createdDate',$event)">Created</th>
+      <th *ngIf="userRol === 3 || userRol === 4" nzWidth="140px" nzShowSort (nzSortChange)="sort('createdDate',$event)">Created</th>
       <th nzWidth="120px" class="text-right">Actions</th>
     </tr>
   </thead>
@@ -26,12 +27,31 @@
   <tbody>
     <tr *ngFor="let t of tickets; trackBy: trackById" class="row-hover">
       <td class="mono">{{ t.id }}</td>
-      <td><span class="truncate" [nz-tooltip]="t.projectName">{{ t.projectName }}</span></td>
+      <td *ngIf="userRol === 3 || userRol === 4"><span class="truncate" [nz-tooltip]="t.projectName">{{ t.projectName }}</span></td>
       <td>
-        <span class="title-col" [nz-tooltip]="t.title">{{ t.title }}</span>
-        <nz-tag *ngIf="t.slaBreached" nzColor="red" nz-tooltip nzTooltipTitle="SLA vencido">SLA</nz-tag>
+        <span
+          class="title-col"
+          nz-tooltip
+          [nzTooltipTitle]="titleTooltip">
+          {{ t.title }}
+        </span>
+
+        <ng-template #titleTooltip>
+          <strong>Description</strong>
+          <p class="tooltip-desc">
+            {{ t.description || 'Sin descripción' }}
+          </p>
+        </ng-template>
+
+        <nz-tag
+          *ngIf="t.slaBreached"
+          nzColor="red"
+          nz-tooltip
+          nzTooltipTitle="SLA vencido">
+          SLA
+        </nz-tag>
       </td>
-      <td>
+      <td *ngIf="userRol === 3 || userRol === 4">
         <nz-tag [nzColor]="prioColor(t.priority)" class="pill">
           <span class="dot" [style.background]="prioDot(t.priority)"></span>
           {{ t.priority }}
@@ -43,11 +63,20 @@
           {{ t.statusLabel }}
         </nz-tag>
       </td>
+      <td *ngIf="userRol === 1 || userRol === 2">
+        <nz-progress
+          [nzPercent]="ticketProgress(t)"
+          [nzStatus]="progressStatus(t)"
+          nzSize="small"
+          nz-tooltip
+          [nzTooltipTitle]="progressTooltip(t)">
+        </nz-progress>
+      </td>
       <td class="assignee">
         <nz-avatar [nzText]="initials(t.assignedTo?.name)" nzSize="small"></nz-avatar>
         <span class="name truncate assignee-name">{{ t.assignedTo?.name || 'Sin asignar' }}</span>
       </td>
-      <td>
+      <td *ngIf="userRol === 3 || userRol === 4">
         <span [nz-tooltip]="t.createdDate | date:'yyyy-MM-dd HH:mm'">
           {{ t.createdDate | date:'yyyy-MM-dd' }}
           <small class="muted">({{ t.createdDate | timeAgo }})</small>

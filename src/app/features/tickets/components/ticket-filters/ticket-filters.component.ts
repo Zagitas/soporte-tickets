@@ -1,6 +1,8 @@
 import {
   Component, EventEmitter, Input, Output,
-  ChangeDetectionStrategy, OnInit
+  ChangeDetectionStrategy, OnInit,
+  inject,
+  DestroyRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +14,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { SelectOption, TicketFilters, TicketPriority, TicketStatus } from '../../models/ticket.model';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { UsersService } from '../../data/users.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-ticket-filters',
@@ -29,6 +33,10 @@ export class TicketFiltersComponent implements OnInit {
 
   @Output() filtersChange = new EventEmitter<TicketFilters>();
 
+  userRol: number = 0;
+  private usersSvc = inject(UsersService);
+    private destroyRef = inject(DestroyRef);
+  
   proyecto:  string = '';
   estado:    TicketStatus | '' = '';
   prioridad: TicketPriority | '' = '';
@@ -37,6 +45,12 @@ export class TicketFiltersComponent implements OnInit {
   private search$ = new Subject<void>();
 
   ngOnInit(): void {
+    // Subscribirse a cambios de rol reactivamente
+    this.usersSvc.idUserRol$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(rol => {
+      this.userRol = rol;
+    });
     this.search$.pipe(debounceTime(300)).subscribe(() => this.emit());
     this.emit(); // primera carga
   }

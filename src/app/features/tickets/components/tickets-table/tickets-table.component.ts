@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -9,10 +10,12 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { Ticket } from '../../models/ticket.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
+import { UsersService } from '../../data/users.service';
 
 type SortDir = 'ascend' | 'descend' | null;
 type TicketWithSla = Ticket & { slaBreached?: boolean } & { statusLabel?: string };
@@ -23,14 +26,14 @@ type TicketWithSla = Ticket & { slaBreached?: boolean } & { statusLabel?: string
   imports: [
     CommonModule,
     NzTableModule, NzTagModule, NzAvatarModule, NzButtonModule, NzIconModule,
-    NzDropDownModule, NzSpaceModule, NzToolTipModule, NzMenuModule, ScrollingModule,
+    NzDropDownModule, NzSpaceModule, NzToolTipModule, NzMenuModule, NzProgressModule, ScrollingModule,
     TimeAgoPipe
   ],
   templateUrl: './tickets-table.component.html',
   styleUrls: ['./tickets-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TicketsTableComponent {
+export class TicketsTableComponent implements OnInit {
   @Input() tickets: TicketWithSla[] = [];
   @Input() density: 'default' | 'small' = 'default';
   @Input() loading = false;
@@ -40,6 +43,19 @@ export class TicketsTableComponent {
   @Output() ticketEdit  = new EventEmitter<Ticket>();
   @Output() ticketDelete = new EventEmitter<Ticket>();
   @Output() sortChange = new EventEmitter<{ field: keyof Ticket, dir: SortDir }>();
+  
+  userRol: number = 0;
+  private usersSvc = inject(UsersService);
+  private destroyRef = inject(DestroyRef);
+
+  ngOnInit(): void {
+    // Subscribirse a cambios de rol reactivamente
+    this.usersSvc.idUserRol$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(rol => {
+      this.userRol = rol;
+    });
+  }
 
   trackById = (_: number, t: Ticket) => t.id;
 
@@ -110,4 +126,44 @@ export class TicketsTableComponent {
     const parts = (name || '').trim().split(/\s+/).filter(Boolean).slice(0, 2);
     return parts.map(p => p[0]?.toUpperCase()).join('');
   }
+
+  ticketProgress(t: Ticket): number {
+    const estimated = (t as any).estimated_time;
+    const spent = (t as any).time_spent;
+
+    // ❌ Si faltan datos → 0%
+    if (!estimated || !spent || estimated <= 0) {
+      return 0;
+    }
+
+    // ✅ Progreso real
+    const percent = Math.round((spent / estimated) * 100);
+
+    // 🔒 Nunca más de 100
+    return Math.min(percent, 100);
+  }
+
+  progressStatus(t: Ticket): 'normal' | 'active' | 'success' {
+    switch (t.status) {
+      case 'IN_PROGRESS':
+        return 'active';
+      case 'RESOLVED':
+      case 'CLOSED':
+        return 'success';
+      default:
+        return 'normal';
+    }
+  }
+
+  progressTooltip(t: Ticket): string {
+    const estimated = (t as any).estimated_time;
+    const spent = (t as any).time_spent;
+
+    if (!estimated || !spent) {
+      return 'Sin información de tiempo';
+    }
+
+    return `Avance: ${this.ticketProgress(t)}%`;
+  }
+
 }

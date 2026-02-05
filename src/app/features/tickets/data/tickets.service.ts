@@ -105,12 +105,15 @@ export class TicketsService {
       created_email: r.created_email || '',
       assigned_email: r.assigned_email || '',
       title: r.title ?? '',
+      description: r.description || '',
       priority: String(r.priority ?? 'low').toLowerCase() as TicketPriority,
       status: String(r.status ?? 'OPEN') as TicketStatus,
       assignedTo: r.assigned || r.assignee || r.assigned_name
         ? { id: String(r.assigned_to ?? ''), name: r.assigned ?? r.assignee ?? r.assigned_name }
         : undefined,
-      createdDate: created
+      createdDate: created,
+      time_spent: Number(r.time_spent ?? 0),
+      estimated_time: Number(r.estimated_time ?? 0)
     };
   }
 
